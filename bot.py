@@ -1,8 +1,8 @@
 import asyncio
 from vkwave.bots import SimpleBotEvent, SimpleLongPollBot
 from vkwave.bots.utils.keyboards import Keyboard
-from vkwave.bots.utils.keyboards.keyboard import ButtonColor
 from schedule import Schedule
+from mailparser import MailParser
 from datetime import datetime, timedelta
 import os
 
@@ -112,4 +112,5 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
     loop.create_task(bot.run())
+    # loop.create_task(mailparser)
     loop.run_forever()

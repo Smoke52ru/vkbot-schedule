@@ -2,16 +2,24 @@ import time
 from email import header
 from imaplib import IMAP4_SSL
 import email
+import os
 
 
 class MailParser:
     MAIL_COUNT = None
-    # TODO Темыч, здесь данные можешь перенести в config.py, чтобы никто
-    #  не видел(я про 'user')
+
+    try:
+        from mailparser.config import MAIL_LOGIN, MAIL_PASSWORD
+    except Exception:
+        MAIL_LOGIN = str(os.environ.get('MAIL_LOGIN'))
+        MAIL_PASSWORD = str(os.environ.get('MAIL_PASSWORD'))
+
     CONNECTION_DATA = {'host': "imap.mail.ru",
                        'port': 993,
-                       'user': {'user': 'pri19.19.1@mail.ru',
-                                'password': 'platoff42'}}
+                       'user': {'user': MAIL_LOGIN,
+                                'password': MAIL_PASSWORD
+                                }
+                       }
 
     def __init__(self):
         self.connection = IMAP4_SSL(host=self.CONNECTION_DATA['host'],
@@ -42,7 +50,7 @@ class MailParser:
         """
         Функция проверки появления новых сообщений
         Сравнивает количество текущих письм на почте, с тем, что было до этого
-        :return: Заголовок, отправитель, принимающий новыйх писем
+        :return: Заголовок, отправитель, адресат новых писем
         """
         mail_count = self.get_mail_count()
         if mail_count > self.MAIL_COUNT:
@@ -56,8 +64,8 @@ class MailParser:
     @staticmethod
     def decode_header(headerMsg):
         """
-        Не ебу как это работает, потому что заебался разбираться с кодировками в этой ебаной библиотеке, функцию
-        спиздив с интернета
+        Не ебу как это работает, потому что заебался разбираться с кодировками в
+        этой ебаной библиотеке, функцию спиздив с интернета
         :param headerMsg: строка, которую нужно декодировать
         :return: декодированная строка
         """
