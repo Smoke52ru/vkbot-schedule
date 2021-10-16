@@ -3,7 +3,7 @@ from email import header
 from imaplib import IMAP4_SSL
 import email
 import os
-import asyncio
+# import asyncio
 
 
 class MailParser:
