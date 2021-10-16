@@ -1,3 +1,4 @@
+import asyncio
 from vkwave.bots import SimpleBotEvent, SimpleLongPollBot
 from vkwave.bots.utils.keyboards import Keyboard
 from vkwave.bots.utils.keyboards.keyboard import ButtonColor
@@ -6,7 +7,7 @@ from datetime import datetime, timedelta
 import os
 
 try:
-    from config import TOKEN, GROUP_ID
+    from schedule.config import TOKEN, GROUP_ID
 except Exception:
     TOKEN = str(os.environ.get('TOKEN'))
     GROUP_ID = int(os.environ.get('GROUP_ID'))
@@ -107,6 +108,8 @@ async def hide_keyboard_schedule(event: SimpleBotEvent):
 
 # run bot
 if __name__ == '__main__':
-    # for i in range(0, 7):
-    #     print((datetime.today() + timedelta(days=i)).weekday())
-    bot.run_forever()
+    # bot.run_forever()
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(bot.run())
+    loop.run_forever()
