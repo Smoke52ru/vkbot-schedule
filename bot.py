@@ -18,9 +18,13 @@ HELP_COMMANDS = ('h', 'help')
 SCHEDULE_COMMANDS = ('s', 'schedule', 'р', 'расписание')
 KEYBOARD_COMMANDS = ('k', 'ks', 'keyboard')
 HIDE_KEYBOARD_COMMANDS = ('hk', 'hide')
+MAIL_PARSER_COMMANDS = ('почта', 'mail', 'm')
 
 # bot init
 bot = SimpleLongPollBot(tokens=TOKEN, group_id=GROUP_ID)
+
+# mailparser init
+mailparser = MailParser()
 
 
 @bot.message_handler(bot.command_filter(commands=HELP_COMMANDS,
@@ -55,7 +59,8 @@ async def schedule(event: SimpleBotEvent) -> str:
 #########################################################
 
 KB_BUTTONS = (('пн', 'вт', 'ср', 'чт', 'пт'),
-              ('сегодня', 'завтра'))
+              ('сегодня', 'завтра'),
+              ('почта',))
 
 kb = Keyboard(one_time=False,
               inline=False)
@@ -63,10 +68,14 @@ kb = Keyboard(one_time=False,
 
 for idx, button in enumerate(KB_BUTTONS[0]):
     kb.add_text_button(button,
-                       payload={"keyboard_option": button,
+                       payload={"schedule_option": button,
                                 "day": idx})
 kb.add_row()
 for button in KB_BUTTONS[1]:
+    kb.add_text_button(button,
+                       payload={"schedule_option": button})
+kb.add_row()
+for button in KB_BUTTONS[2]:
     kb.add_text_button(button,
                        payload={"keyboard_option": button})
 
@@ -78,18 +87,18 @@ async def get_keyboard_schedule(event: SimpleBotEvent):
                        keyboard=kb.get_keyboard())
 
 
-@bot.message_handler(bot.payload_contains_filter(key="keyboard_option"))
+@bot.message_handler(bot.payload_contains_filter(key="schedule_option"))
 async def keyboard_schedule_handler(event: SimpleBotEvent):
     now = datetime.now()
-    if event.payload["keyboard_option"] == "сегодня":
+    if event.payload["schedule_option"] == "сегодня":
         day = now
-    elif event.payload["keyboard_option"] == "завтра":
+    elif event.payload["schedule_option"] == "завтра":
         day = now + timedelta(days=1)
-    elif event.payload["keyboard_option"] == "скрыть":
+    elif event.payload["schedule_option"] == "скрыть":
         await hide_keyboard_schedule(event)
-        return
+        return None
     else:
-        day = now - timedelta(days=now.weekday()) + timedelta(days=event.payload["day"])
+        day = now + timedelta(days=event.payload["day"] - now.weekday())
 
     answer = str(Schedule(day.strftime('%d.%m.%Y')))
     return answer
@@ -103,6 +112,15 @@ async def hide_keyboard_schedule(event: SimpleBotEvent):
 
 
 #########################################################
+#                         MAIL                          #
+#########################################################
+
+@bot.message_handler(bot.command_filter(commands=MAIL_PARSER_COMMANDS,
+                                        prefixes=GLOBAL_PREFIXES))
+async def mail_check(event: SimpleBotEvent):
+    await event.answer(message=str(mailparser.check()))
+
+#########################################################
 #########################################################
 #########################################################
 
@@ -112,5 +130,5 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
     loop.create_task(bot.run())
-    # loop.create_task(mailparser)
+    # loop.create_task(mailparser.run())
     loop.run_forever()

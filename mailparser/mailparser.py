@@ -3,6 +3,7 @@ from email import header
 from imaplib import IMAP4_SSL
 import email
 import os
+import asyncio
 
 
 class MailParser:
@@ -64,8 +65,6 @@ class MailParser:
     @staticmethod
     def decode_header(headerMsg):
         """
-        Не ебу как это работает, потому что заебался разбираться с кодировками в
-        этой ебаной библиотеке, функцию спиздив с интернета
         :param headerMsg: строка, которую нужно декодировать
         :return: декодированная строка
         """
@@ -77,6 +76,10 @@ class MailParser:
             else:
                 s += s1
         return s
+
+    # async def run(self):
+    #     while True:
+    #         await self.check()
 
 
 if __name__ == '__main__':
