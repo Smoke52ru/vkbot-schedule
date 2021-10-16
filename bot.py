@@ -12,7 +12,7 @@ except Exception:
     TOKEN = str(os.environ.get('TOKEN'))
     GROUP_ID = int(os.environ.get('GROUP_ID'))
 
-GLOBAL_PREFIXES = ('/', '!', '')
+GLOBAL_PREFIXES = ('/', '!', '', '@plato_v ')
 
 HELP_COMMANDS = ('h', 'help')
 SCHEDULE_COMMANDS = ('s', 'schedule', 'р', 'расписание')
@@ -65,7 +65,6 @@ KB_BUTTONS = (('пн', 'вт', 'ср', 'чт', 'пт'),
 kb = Keyboard(one_time=False,
               inline=False)
 
-
 for idx, button in enumerate(KB_BUTTONS[0]):
     kb.add_text_button(button,
                        payload={"schedule_option": button,
@@ -74,10 +73,11 @@ kb.add_row()
 for button in KB_BUTTONS[1]:
     kb.add_text_button(button,
                        payload={"schedule_option": button})
+
 kb.add_row()
 for button in KB_BUTTONS[2]:
     kb.add_text_button(button,
-                       payload={"keyboard_option": button})
+                       payload={"mail_option": button})
 
 
 @bot.message_handler(bot.command_filter(commands=KEYBOARD_COMMANDS,
@@ -96,7 +96,7 @@ async def keyboard_schedule_handler(event: SimpleBotEvent):
         day = now + timedelta(days=1)
     elif event.payload["schedule_option"] == "скрыть":
         await hide_keyboard_schedule(event)
-        return None
+        return
     else:
         day = now + timedelta(days=event.payload["day"] - now.weekday())
 
@@ -116,9 +116,11 @@ async def hide_keyboard_schedule(event: SimpleBotEvent):
 #########################################################
 
 @bot.message_handler(bot.command_filter(commands=MAIL_PARSER_COMMANDS,
-                                        prefixes=GLOBAL_PREFIXES))
+                                        prefixes=GLOBAL_PREFIXES)
+                     | bot.payload_contains_filter("mail_option"))
 async def mail_check(event: SimpleBotEvent):
     await event.answer(message=str(mailparser.check()))
+
 
 #########################################################
 #########################################################
