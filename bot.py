@@ -31,6 +31,7 @@ mailparser = MailParser()
                                         prefixes=GLOBAL_PREFIXES))
 async def help_command(event: SimpleBotEvent) -> str:
     return f"Hint: Боту можно писать в лс\n" \
+           f"https://vk.com/plato_v\n" \
            f"Prefixes: {GLOBAL_PREFIXES}\n" \
            f"\n" \
            f"Commands:\n" \
@@ -38,7 +39,8 @@ async def help_command(event: SimpleBotEvent) -> str:
            f"s(chedule) - сегодняшнее расписание\n" \
            f"s +[n] - расписание на n-ный день (напр. +1 - завтра)\n" \
            f"k - клавиатура с выбором дня недели\n" \
-           f"hk - скрыть клавиатуру\n"
+           f"hk - скрыть клавиатуру\n" \
+           f"m(ail) - проверить, есть ли новые письма на почте группы\n"
 
 
 @bot.message_handler(bot.command_filter(commands=SCHEDULE_COMMANDS,
