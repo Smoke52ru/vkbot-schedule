@@ -1,5 +1,9 @@
 import asyncio
-from vkwave.bots import SimpleBotEvent, SimpleLongPollBot
+from vkwave.bots import (
+    SimpleBotEvent,
+    SimpleLongPollBot,
+    create_api_session_aiohttp
+)
 from vkwave.bots.utils.keyboards import Keyboard
 from schedule import Schedule
 from mailparser import MailParser
@@ -24,7 +28,7 @@ MAIL_PARSER_COMMANDS = ('почта', 'mail', 'm')
 bot = SimpleLongPollBot(tokens=TOKEN, group_id=GROUP_ID)
 
 # mailparser init
-mailparser = MailParser()
+# mailparser = MailParser()
 
 
 @bot.message_handler(bot.command_filter(commands=HELP_COMMANDS,
@@ -85,6 +89,7 @@ for button in KB_BUTTONS[2]:
 @bot.message_handler(bot.command_filter(commands=KEYBOARD_COMMANDS,
                                         prefixes=GLOBAL_PREFIXES))
 async def get_keyboard_schedule(event: SimpleBotEvent):
+    kb.one_time = False
     await event.answer(message='Ok',
                        keyboard=kb.get_keyboard())
 
@@ -109,7 +114,8 @@ async def keyboard_schedule_handler(event: SimpleBotEvent):
 @bot.message_handler(bot.command_filter(commands=HIDE_KEYBOARD_COMMANDS,
                                         prefixes=GLOBAL_PREFIXES))
 async def hide_keyboard_schedule(event: SimpleBotEvent):
-    await event.answer(message='Ok',
+    kb.one_time = True
+    await event.answer(message='Клавиатура будет скрыта после нажатия на любую',
                        keyboard=kb.get_keyboard())
 
 
@@ -117,11 +123,11 @@ async def hide_keyboard_schedule(event: SimpleBotEvent):
 #                         MAIL                          #
 #########################################################
 
-@bot.message_handler(bot.command_filter(commands=MAIL_PARSER_COMMANDS,
-                                        prefixes=GLOBAL_PREFIXES)
-                     | bot.payload_contains_filter("mail_option"))
-async def mail_check(event: SimpleBotEvent):
-    await event.answer(message=str(mailparser.check()))
+# @bot.message_handler(bot.command_filter(commands=MAIL_PARSER_COMMANDS,
+#                                         prefixes=GLOBAL_PREFIXES)
+#                      | bot.payload_contains_filter("mail_option"))
+# async def mail_check(event: SimpleBotEvent):
+#     await event.answer(message=str(mailparser.check()))
 
 
 #########################################################
