@@ -5,6 +5,8 @@
         today_schedule          =   Schedule()
         one_day_schedule        =   Schedule('date')
         several_days_schedule   =   Schedule('start_date', 'end_date')
+
+        date format - 01.01.2001
 """
 import requests
 from bs4 import BeautifulSoup
